@@ -53,8 +53,25 @@ jobs:
           VERSION: ${{ steps.version.outputs.value }}
         run: dotnet build -c Release "-p:Version=$VERSION"
 
+      # The test project rebuilds ComCon.exe through its project reference, so it must get the same version.
+      # Otherwise it overwrites the versioned exe with a 0.0.0-dev build before the upload.
       - name: Test
-        run: dotnet test tests/ComCon.Tests -c Release
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: dotnet test tests/ComCon.Tests -c Release "-p:Version=$VERSION"
+
+      - name: Check the version of ComCon.exe
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          $actual = (Get-Item bin/Release/net481/ComCon.exe).VersionInfo.ProductVersion
+          Write-Host "ComCon.exe ProductVersion: $actual (expected $env:VERSION)"
+          if (-not $actual.StartsWith("$env:VERSION+") -and $actual -ne $env:VERSION) {
+            Write-Error "ComCon.exe has version '$actual', expected '$env:VERSION'"
+            exit 1
+          }
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
