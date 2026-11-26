@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Japanese messages. Keys must match Strings.resx. -->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Command line -->
+  <data name="Usage" xml:space="preserve">
+    <value>使い方: ComCon &lt;PORT&gt; [options]
+       ComCon --list
+
+  PORT                 接続するポート (例: COM3, com3, 3)
+
+オプション:
+  -b, --baud &lt;N&gt;       ボーレート (既定: 115200)
+  -d, --data &lt;5-8&gt;     データビット (既定: 8)
+  -p, --parity &lt;P&gt;     none | odd | even | mark | space (既定: none)
+  -s, --stop &lt;S&gt;       1 | 1.5 | 2 (既定: 1)
+  -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (既定: none)
+  -n, --newline &lt;NL&gt;   Enter で送る改行: cr | lf | crlf (既定: cr)
+  -e, --echo           ローカルエコーを有効にする
+      --encoding &lt;E&gt;   送受信の文字コード (既定: utf-8, 例: shift_jis)
+      --no-dtr         DTR を ON にしない
+      --no-rts         RTS を ON にしない
+      --lang &lt;L&gt;       メッセージの言語: en | ja (既定: OS の言語)
+  -l, --list           利用可能なポートを一覧表示
+  -h, --help           このヘルプを表示
+
+接続中のキー操作 (Ctrl+] の後に続けて押す):
+  q        終了
+  b        ブレーク信号を送信
+  e        ローカルエコー切替
+  Ctrl+]   Ctrl+] そのものを送信
+  ?        ヘルプ表示</value>
+  </data>
+  <data name="UnknownOption" xml:space="preserve">
+    <value>不明なオプション: {0}</value>
+  </data>
+  <data name="MultiplePorts" xml:space="preserve">
+    <value>ポートが複数指定されています: {0}, {1}</value>
+  </data>
+  <data name="MissingValue" xml:space="preserve">
+    <value>{0} には値が必要です。</value>
+  </data>
+  <data name="InvalidValue" xml:space="preserve">
+    <value>{0} の値が不正です: {1}</value>
+  </data>
+  <data name="UnknownEncoding" xml:space="preserve">
+    <value>不明な文字コード: {0}</value>
+  </data>
+
+  <!-- Port listing / opening -->
+  <data name="NoPortsFound" xml:space="preserve">
+    <value>シリアルポートが見つかりません。</value>
+  </data>
+  <data name="AvailablePorts" xml:space="preserve">
+    <value>利用可能なポート:</value>
+  </data>
+  <data name="PortInUse" xml:space="preserve">
+    <value>{0} を開けません: 他のプログラムが使用中か、アクセスが拒否されました。</value>
+  </data>
+  <data name="CannotOpenPort" xml:space="preserve">
+    <value>{0} を開けません: {1}</value>
+  </data>
+
+  <!-- Console -->
+  <data name="VtOutputUnsupported" xml:space="preserve">
+    <value>コンソールの VT 出力モードを有効にできません (Windows 10 1809 以降が必要です)。</value>
+  </data>
+  <data name="VtInputUnsupported" xml:space="preserve">
+    <value>コンソールの VT 入力モードを有効にできません (Windows 10 1809 以降が必要です)。</value>
+  </data>
+
+  <!-- Session status -->
+  <data name="Connected" xml:space="preserve">
+    <value>{0} に接続しました  (終了: Ctrl+] q / ヘルプ: Ctrl+] ?)</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>切断しました。</value>
+  </data>
+  <data name="LocalEchoOn" xml:space="preserve">
+    <value>ローカルエコー: ON</value>
+  </data>
+  <data name="LocalEchoOff" xml:space="preserve">
+    <value>ローカルエコー: OFF</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>{0}  q:終了  b:ブレーク送信  e:ローカルエコー切替  Ctrl+]:Ctrl+] を送信</value>
+  </data>
+  <data name="UnknownCommand" xml:space="preserve">
+    <value>不明なコマンドです (Ctrl+] ? でヘルプ)</value>
+  </data>
+  <data name="BreakSent" xml:space="preserve">
+    <value>ブレーク信号を送信しました。</value>
+  </data>
+  <data name="BreakFailed" xml:space="preserve">
+    <value>ブレーク送信に失敗しました: {0}</value>
+  </data>
+  <data name="WriteTimeout" xml:space="preserve">
+    <value>送信タイムアウト (フロー制御で相手が受信不可の状態です)。</value>
+  </data>
+  <data name="WriteError" xml:space="preserve">
+    <value>送信エラー: {0}</value>
+  </data>
+  <data name="ReadError" xml:space="preserve">
+    <value>受信エラー (デバイスが切断された可能性があります): {0}</value>
+  </data>
+</root>

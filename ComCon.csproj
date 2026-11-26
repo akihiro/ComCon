@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net481</TargetFramework>
+    <!-- English messages are the neutral resources. -->
+    <NeutralLanguage>en</NeutralLanguage>
+    <!-- Single-file output: embed the PDB and do not generate ComCon.exe.config (it only held supportedRuntime). -->
+    <DebugType>embedded</DebugType>
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Management" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Generate the strongly typed ComCon.Strings class from Strings.resx at build time. -->
+    <EmbeddedResource Update="Strings.resx">
+      <StronglyTypedFileName>$(IntermediateOutputPath)Strings.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>ComCon</StronglyTypedNamespace>
+      <StronglyTypedClassName>Strings</StronglyTypedClassName>
+    </EmbeddedResource>
+    <!--
+      Localized resources are embedded in the main assembly instead of satellite assemblies (<culture>\ComCon.resources.dll),
+      and read by EmbeddedResourceManager. Covers every Strings.<culture>.resx.
+    -->
+    <EmbeddedResource Update="Strings.*.resx">
+      <WithCulture>false</WithCulture>
+      <LogicalName>ComCon.%(Filename).resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

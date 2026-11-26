@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  User-facing messages (neutral language: English).
+  Every key here must also exist in the localized files (Strings.ja.resx, ...).
+  {0}, {1} are string.Format placeholders.
+-->
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Command line -->
+  <data name="Usage" xml:space="preserve">
+    <value>Usage: ComCon &lt;PORT&gt; [options]
+       ComCon --list
+
+  PORT                 Port to connect to (e.g. COM3, com3, 3)
+
+Options:
+  -b, --baud &lt;N&gt;       Baud rate (default: 115200)
+  -d, --data &lt;5-8&gt;     Data bits (default: 8)
+  -p, --parity &lt;P&gt;     none | odd | even | mark | space (default: none)
+  -s, --stop &lt;S&gt;       1 | 1.5 | 2 (default: 1)
+  -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (default: none)
+  -n, --newline &lt;NL&gt;   Newline sent for Enter: cr | lf | crlf (default: cr)
+  -e, --echo           Enable local echo
+      --encoding &lt;E&gt;   Text encoding for both directions (default: utf-8, e.g. shift_jis)
+      --no-dtr         Do not turn DTR on
+      --no-rts         Do not turn RTS on
+      --lang &lt;L&gt;       Message language: en | ja (default: OS language)
+  -l, --list           List available ports
+  -h, --help           Show this help
+
+While connected, press Ctrl+] followed by:
+  q        Quit
+  b        Send a break signal
+  e        Toggle local echo
+  Ctrl+]   Send Ctrl+] itself
+  ?        Show help</value>
+  </data>
+  <data name="UnknownOption" xml:space="preserve">
+    <value>Unknown option: {0}</value>
+  </data>
+  <data name="MultiplePorts" xml:space="preserve">
+    <value>More than one port specified: {0}, {1}</value>
+  </data>
+  <data name="MissingValue" xml:space="preserve">
+    <value>{0} requires a value.</value>
+  </data>
+  <data name="InvalidValue" xml:space="preserve">
+    <value>Invalid value for {0}: {1}</value>
+  </data>
+  <data name="UnknownEncoding" xml:space="preserve">
+    <value>Unknown encoding: {0}</value>
+  </data>
+
+  <!-- Port listing / opening -->
+  <data name="NoPortsFound" xml:space="preserve">
+    <value>No serial ports found.</value>
+  </data>
+  <data name="AvailablePorts" xml:space="preserve">
+    <value>Available ports:</value>
+  </data>
+  <data name="PortInUse" xml:space="preserve">
+    <value>Cannot open {0}: it is in use by another program, or access was denied.</value>
+  </data>
+  <data name="CannotOpenPort" xml:space="preserve">
+    <value>Cannot open {0}: {1}</value>
+  </data>
+
+  <!-- Console -->
+  <data name="VtOutputUnsupported" xml:space="preserve">
+    <value>Cannot enable VT output mode on the console (Windows 10 version 1809 or later is required).</value>
+  </data>
+  <data name="VtInputUnsupported" xml:space="preserve">
+    <value>Cannot enable VT input mode on the console (Windows 10 version 1809 or later is required).</value>
+  </data>
+
+  <!-- Session status -->
+  <data name="Connected" xml:space="preserve">
+    <value>Connected to {0}  (quit: Ctrl+] q / help: Ctrl+] ?)</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Disconnected.</value>
+  </data>
+  <data name="LocalEchoOn" xml:space="preserve">
+    <value>Local echo: ON</value>
+  </data>
+  <data name="LocalEchoOff" xml:space="preserve">
+    <value>Local echo: OFF</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>{0}  q:quit  b:send break  e:toggle local echo  Ctrl+]:send Ctrl+]</value>
+  </data>
+  <data name="UnknownCommand" xml:space="preserve">
+    <value>Unknown command (Ctrl+] ? for help)</value>
+  </data>
+  <data name="BreakSent" xml:space="preserve">
+    <value>Break signal sent.</value>
+  </data>
+  <data name="BreakFailed" xml:space="preserve">
+    <value>Failed to send break: {0}</value>
+  </data>
+  <data name="WriteTimeout" xml:space="preserve">
+    <value>Write timed out (flow control: the remote side is not ready to receive).</value>
+  </data>
+  <data name="WriteError" xml:space="preserve">
+    <value>Write error: {0}</value>
+  </data>
+  <data name="ReadError" xml:space="preserve">
+    <value>Read error (the device may have been disconnected): {0}</value>
+  </data>
+</root>
