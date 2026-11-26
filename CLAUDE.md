@@ -37,6 +37,7 @@ Also in the root: `.editorconfig` (code style, including `using` placement), `.g
 - `Session` runs two threads:
   - The **main thread** reads keys and handles the `Ctrl+]` (0x1D) command prefix. It translates Enter (`\r`) to the configured newline and encodes text with a stateful `Encoder`.
   - A **background receiver thread** does blocking `BaseStream.Read` calls and decodes the bytes with a stateful `Decoder`, so multi-byte characters split across reads still come out right.
+    - For console output, the decoded text then goes through `NewlineTranslator` (`--recv-newline lf|cr`). It is stateful, so a CR LF pair split across reads is not doubled. It is needed because `DISABLE_NEWLINE_AUTO_RETURN` makes a bare LF move down without returning to column 0. In pipe mode, received bytes stay raw.
   - Console writes are serialized by a lock inside `TerminalConsole`.
 - **Localization:**
   - Every user-facing message comes from `Strings.resx`, which holds English, the neutral language (`<NeutralLanguage>en`). `Strings.ja.resx` holds Japanese.

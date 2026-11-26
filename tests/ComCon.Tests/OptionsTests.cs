@@ -21,6 +21,7 @@ namespace ComCon.Tests
             Assert.True(o.RtsEnable);
             Assert.False(o.LocalEcho);
             Assert.False(o.Reconnect);
+            Assert.Equal(ReceiveNewline.None, o.ReceiveNewline);
             Assert.Equal("\r", o.NewLine);
             Assert.Equal(65001, o.Encoding.CodePage);
             Assert.Empty(o.Encoding.GetPreamble());
@@ -149,6 +150,15 @@ namespace ComCon.Tests
         }
 
         [Theory]
+        [InlineData("none", "None")]
+        [InlineData("lf", "Lf")]
+        [InlineData("CR", "Cr")]
+        public void ReceiveNewlineValues(string value, string expected)
+        {
+            Assert.Equal(expected, Options.Parse(new[] { "--recv-newline", value }).ReceiveNewline.ToString());
+        }
+
+        [Theory]
         [InlineData("-r")]
         [InlineData("--reconnect")]
         public void ReconnectFlags(string arg)
@@ -211,6 +221,7 @@ namespace ComCon.Tests
         [InlineData("-s", "3")]
         [InlineData("-f", "dtr")]
         [InlineData("-n", "crcr")]
+        [InlineData("--recv-newline", "crlf")]
         [InlineData("--encoding", "no-such-encoding")]
         [InlineData("--lang", "not a culture!")]
         public void InvalidValueThrows(string option, string value)

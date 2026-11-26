@@ -32,6 +32,8 @@ Options:
   -s, --stop &lt;S&gt;       1 | 1.5 | 2 (default: 1)
   -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (default: none)
   -n, --newline &lt;NL&gt;   Newline sent for Enter: cr | lf | crlf (default: cr)
+      --recv-newline &lt;M&gt;
+                       Received line endings: none | lf (device sends LF only) | cr (CR only) (default: none)
   -e, --echo           Enable local echo
   -r, --reconnect      Wait for the port and reconnect when it disappears (USB unplug, device reset)
       --encoding &lt;E&gt;   Text encoding for both directions (default: utf-8, e.g. shift_jis)

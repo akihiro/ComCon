@@ -321,6 +321,8 @@ namespace ComCon
         {
             var buffer = new byte[4096];
             var chars = new char[options.Encoding.GetMaxCharCount(buffer.Length)];
+            var newlines = new NewlineTranslator(options.ReceiveNewline);
+            var translated = new char[NewlineTranslator.MaxOutputLength(chars.Length)];
 
             while (!stopping)
             {
@@ -366,7 +368,14 @@ namespace ComCon
                 if (term.OutputIsConsole)
                 {
                     int c = decoder.GetChars(buffer, 0, n, chars, 0, false);
-                    term.WriteChars(chars, c);
+                    if (newlines.Mode == ReceiveNewline.None)
+                    {
+                        term.WriteChars(chars, c);
+                    }
+                    else
+                    {
+                        term.WriteChars(translated, newlines.Translate(chars, c, translated));
+                    }
                 }
                 else
                 {
