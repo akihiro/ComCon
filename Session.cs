@@ -33,6 +33,9 @@ namespace ComCon
         private bool localEcho;
         private bool notConnectedShown;
 
+        // Written by the receiver thread; set to null when logging stops (write error or exit).
+        private volatile SessionLog log;
+
         public Session(Options options)
         {
             this.options = options;
@@ -42,6 +45,33 @@ namespace ComCon
         }
 
         public int Run()
+        {
+            if (options.LogFile != null)
+            {
+                try
+                {
+                    log = SessionLog.Open(options.LogFile, options.Encoding, options.LogTimestamp);
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is ArgumentException
+                    || ex is NotSupportedException || ex is System.Security.SecurityException)
+                {
+                    // Reported here: Program would otherwise describe these exceptions as port errors.
+                    Console.Error.WriteLine(Localization.Format(Strings.CannotOpenLog, options.LogFile, ex.Message));
+                    return 2;
+                }
+            }
+
+            try
+            {
+                return RunSession();
+            }
+            finally
+            {
+                CloseLog();
+            }
+        }
+
+        private int RunSession()
         {
             string initialError = null;
             try
@@ -72,6 +102,11 @@ namespace ComCon
                 else
                 {
                     term.WriteStatus(Localization.Format(Strings.WaitingForPort, options.PortName, initialError));
+                }
+
+                if (log != null)
+                {
+                    term.WriteStatus(Localization.Format(Strings.Logging, Path.GetFullPath(options.LogFile)));
                 }
 
                 var receiver = new Thread(ReceiveLoop) { IsBackground = true, Name = "ComCon receiver" };
@@ -368,18 +403,24 @@ namespace ComCon
                 if (term.OutputIsConsole)
                 {
                     int c = decoder.GetChars(buffer, 0, n, chars, 0, false);
-                    if (newlines.Mode == ReceiveNewline.None)
+                    char[] shown = chars;
+                    if (newlines.Mode != ReceiveNewline.None)
                     {
-                        term.WriteChars(chars, c);
+                        c = newlines.Translate(chars, c, translated);
+                        shown = translated;
                     }
-                    else
-                    {
-                        term.WriteChars(translated, newlines.Translate(chars, c, translated));
-                    }
+
+                    term.WriteChars(shown, c);
+                    WriteLog(shown, c);
                 }
                 else
                 {
                     term.WriteBytes(buffer, n);
+                    if (log != null)
+                    {
+                        // Pipe mode passes raw bytes through, but the log is text, so decode for it.
+                        WriteLog(chars, decoder.GetChars(buffer, 0, n, chars, 0, false));
+                    }
                 }
             }
         }
@@ -454,7 +495,38 @@ namespace ComCon
             term.WriteStatus(message);
             term.Restore();
             ClosePort();
+            CloseLog();
             Environment.Exit(2);
+        }
+
+        /// <summary>Writes received text to the log, if any. On a write error, reports it once and stops logging.</summary>
+        private void WriteLog(char[] buffer, int count)
+        {
+            SessionLog current = log;
+            if (current == null)
+            {
+                return;
+            }
+
+            try
+            {
+                current.Write(buffer, count);
+            }
+            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
+            {
+                CloseLog();
+                term.WriteStatus(Localization.Format(Strings.LogWriteError, ex.Message));
+            }
+        }
+
+        private void CloseLog()
+        {
+            SessionLog current = log;
+            log = null;
+            if (current != null)
+            {
+                current.Dispose();
+            }
         }
 
         private void ClosePort()

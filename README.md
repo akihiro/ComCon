@@ -40,6 +40,8 @@ ComCon COM3 -b 9600 -p even      Connect at 9600 8E1
 ComCon 3 -f rtscts -n crlf       Use RTS/CTS flow control and send CRLF on Enter
 ComCon COM3 -r                   Reconnect automatically after an unplug or device reset
 ComCon COM3 --recv-newline lf    Show output from a device that ends lines with LF only
+ComCon COM3 --log s.log --log-timestamp
+                                 Also save received data to s.log, with a timestamp per line
 ```
 
 Run `ComCon --help` for the full list of options, and `ComCon --version` to show the version.

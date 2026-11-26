@@ -40,6 +40,8 @@ ComCon COM3 -b 9600 -p even      9600 8E1 で接続
 ComCon 3 -f rtscts -n crlf       RTS/CTS フロー制御を使い、Enter で CRLF を送信
 ComCon COM3 -r                   抜き差しやデバイスのリセット後に自動で再接続
 ComCon COM3 --recv-newline lf    改行が LF だけのデバイスの出力を正しく表示
+ComCon COM3 --log s.log --log-timestamp
+                                 受信データを s.log にも保存 (各行にタイムスタンプ付き)
 ```
 
 すべてのオプションは `ComCon --help` で、バージョンは `ComCon --version` で確認できます。

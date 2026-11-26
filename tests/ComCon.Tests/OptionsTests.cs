@@ -22,6 +22,8 @@ namespace ComCon.Tests
             Assert.False(o.LocalEcho);
             Assert.False(o.Reconnect);
             Assert.Equal(ReceiveNewline.None, o.ReceiveNewline);
+            Assert.Null(o.LogFile);
+            Assert.False(o.LogTimestamp);
             Assert.Equal("\r", o.NewLine);
             Assert.Equal(65001, o.Encoding.CodePage);
             Assert.Empty(o.Encoding.GetPreamble());
@@ -158,6 +160,30 @@ namespace ComCon.Tests
             Assert.Equal(expected, Options.Parse(new[] { "--recv-newline", value }).ReceiveNewline.ToString());
         }
 
+        [Fact]
+        public void LogOptions()
+        {
+            Options o = Options.Parse(new[] { "COM3", "--log", "session.log", "--log-timestamp" });
+
+            Assert.Equal("session.log", o.LogFile);
+            Assert.True(o.LogTimestamp);
+        }
+
+        [Fact]
+        public void LogWithoutTimestamp()
+        {
+            Options o = Options.Parse(new[] { "COM3", "--log", "session.log" });
+
+            Assert.Equal("session.log", o.LogFile);
+            Assert.False(o.LogTimestamp);
+        }
+
+        [Fact]
+        public void LogTimestampWithoutLogThrows()
+        {
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "COM3", "--log-timestamp" }));
+        }
+
         [Theory]
         [InlineData("-r")]
         [InlineData("--reconnect")]
@@ -207,6 +233,7 @@ namespace ComCon.Tests
         [InlineData("--parity")]
         [InlineData("--encoding")]
         [InlineData("--lang")]
+        [InlineData("--log")]
         public void MissingValueThrows(string option)
         {
             Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "COM3", option }));

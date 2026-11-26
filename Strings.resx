@@ -36,6 +36,8 @@ Options:
                        Received line endings: none | lf (device sends LF only) | cr (CR only) (default: none)
   -e, --echo           Enable local echo
   -r, --reconnect      Wait for the port and reconnect when it disappears (USB unplug, device reset)
+      --log &lt;FILE&gt;     Also append received data to FILE
+      --log-timestamp  Start each line in the log with a timestamp
       --encoding &lt;E&gt;   Text encoding for both directions (default: utf-8, e.g. shift_jis)
       --no-dtr         Do not turn DTR on
       --no-rts         Do not turn RTS on
@@ -62,6 +64,9 @@ While connected, press Ctrl+] followed by:
   </data>
   <data name="InvalidValue" xml:space="preserve">
     <value>Invalid value for {0}: {1}</value>
+  </data>
+  <data name="LogTimestampRequiresLog" xml:space="preserve">
+    <value>--log-timestamp requires --log &lt;FILE&gt;.</value>
   </data>
   <data name="UnknownEncoding" xml:space="preserve">
     <value>Unknown encoding: {0}</value>
@@ -131,6 +136,15 @@ While connected, press Ctrl+] followed by:
   </data>
   <data name="NotConnected" xml:space="preserve">
     <value>Not connected. Input is discarded until the port comes back.</value>
+  </data>
+  <data name="CannotOpenLog" xml:space="preserve">
+    <value>Cannot open log file {0}: {1}</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Logging received data to {0}</value>
+  </data>
+  <data name="LogWriteError" xml:space="preserve">
+    <value>Cannot write to the log file, logging stopped: {0}</value>
   </data>
   <data name="ReadError" xml:space="preserve">
     <value>Read error (the device may have been disconnected): {0}</value>
