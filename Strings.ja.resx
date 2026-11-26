@@ -46,6 +46,9 @@
   q        終了
   b        ブレーク信号を送信
   e        ローカルエコー切替
+  d        DTR 切替
+  r        RTS 切替
+  R        DTR/RTS でボードをリセット (ESP32, Arduino)
   Ctrl+]   Ctrl+] そのものを送信
   ?        ヘルプ表示</value>
   </data>
@@ -104,7 +107,7 @@
     <value>ローカルエコー: OFF</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
-    <value>{0}  q:終了  b:ブレーク送信  e:ローカルエコー切替  Ctrl+]:Ctrl+] を送信</value>
+    <value>{0}  q:終了  b:ブレーク送信  e:ローカルエコー切替  d:DTR  r:RTS  R:ボードをリセット  Ctrl+]:Ctrl+] を送信</value>
   </data>
   <data name="UnknownCommand" xml:space="preserve">
     <value>不明なコマンドです (Ctrl+] ? でヘルプ)</value>
@@ -114,6 +117,30 @@
   </data>
   <data name="BreakFailed" xml:space="preserve">
     <value>ブレーク送信に失敗しました: {0}</value>
+  </data>
+  <data name="DtrOn" xml:space="preserve">
+    <value>DTR: ON</value>
+  </data>
+  <data name="DtrOff" xml:space="preserve">
+    <value>DTR: OFF</value>
+  </data>
+  <data name="RtsOn" xml:space="preserve">
+    <value>RTS: ON</value>
+  </data>
+  <data name="RtsOff" xml:space="preserve">
+    <value>RTS: OFF</value>
+  </data>
+  <data name="RtsOwnedByFlowControl" xml:space="preserve">
+    <value>RTS は RTS/CTS フロー制御で使用中のため変更できません。</value>
+  </data>
+  <data name="ResetSent" xml:space="preserve">
+    <value>リセットパルスを送信しました (DTR/RTS)。</value>
+  </data>
+  <data name="ResetSentDtrOnly" xml:space="preserve">
+    <value>DTR のみでリセットパルスを送信しました (RTS は RTS/CTS フロー制御で使用中)。</value>
+  </data>
+  <data name="ModemLinesFailed" xml:space="preserve">
+    <value>DTR/RTS を変更できませんでした: {0}</value>
   </data>
   <data name="WriteTimeout" xml:space="preserve">
     <value>送信タイムアウト (フロー制御で相手が受信不可の状態です)。</value>

@@ -55,8 +55,13 @@ While connected, press `Ctrl+]` and then one of these keys to run a local comman
 | `q` | Quit |
 | `b` | Send a break signal |
 | `e` | Turn local echo on or off |
+| `d` | Turn DTR on or off |
+| `r` | Turn RTS on or off (not while RTS/CTS flow control is on) |
+| `R` | Reset the board through DTR/RTS: works with the ESP32/ESP8266 auto-reset circuit and Arduino boards that reset on DTR |
 | `?` | Show help |
 | `Ctrl+]` | Send `Ctrl+]` (0x1D) itself |
+
+Commands are case-insensitive, except `r` (toggle RTS) and `R` (reset).
 
 `Ctrl+C` does not quit ComCon. It is sent to the remote side as 0x03.
 
