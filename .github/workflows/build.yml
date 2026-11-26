@@ -8,50 +8,85 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Least privilege by default. Jobs that need more ask for it explicitly.
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      # Third-party code is pinned to full commit SHAs (tags can be moved). Dependabot keeps them up to date.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Determine version
         id: version
         shell: bash
+        # Untrusted values (the tag name) go through env, never ${{ }} inside the script,
+        # and are validated before use.
+        env:
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          if [[ "$REF" == refs/tags/v* ]]; then
+            version="${REF_NAME#v}"
+            if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::Tag '$REF_NAME' is not a valid version (expected v1.2.3 or v1.2.3-beta.1)"
+              exit 1
+            fi
           else
-            echo "value=0.0.0-ci.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+            version="0.0.0-ci.$RUN_NUMBER"
           fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
 
       - name: Build
-        run: dotnet build -c Release -p:Version=${{ steps.version.outputs.value }}
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: dotnet build -c Release "-p:Version=$VERSION"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ComCon
           path: bin/Release/net481/ComCon.exe
           if-no-files-found: error
 
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The environment limits which refs may run this job (configured in the repository settings: v* tags only).
+    environment: release
     permissions:
-      contents: write
+      contents: write      # create the release
+      id-token: write      # sign the provenance attestation
+      attestations: write  # store the provenance attestation
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ComCon
+
+      # Lets users verify that ComCon.exe was built by this workflow from this repository:
+      #   gh attestation verify ComCon.exe --repo akihiro/ComCon
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ComCon.exe
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
+          sha256sum ComCon.exe > ComCon.exe.sha256
           prerelease=""
           if [[ "$TAG" == *-* ]]; then prerelease="--prerelease"; fi
-          gh release create "$TAG" ComCon.exe --repo "$GITHUB_REPOSITORY" --title "ComCon $TAG" --generate-notes $prerelease
+          gh release create "$TAG" ComCon.exe ComCon.exe.sha256 --repo "$GITHUB_REPOSITORY" --title "ComCon $TAG" --generate-notes $prerelease

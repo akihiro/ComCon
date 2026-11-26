@@ -46,4 +46,12 @@ By contributing, you agree that your contributions are licensed under the [Apach
 
 ## Releases (maintainers)
 
-Push a tag such as `v1.2.3`. The workflow builds `ComCon.exe` with that version and attaches it to a new GitHub Release. Tags that contain a hyphen (`v1.2.3-beta.1`) are marked as pre-releases.
+Push a tag such as `v1.2.3`. Only admins can create `v*` tags. The workflow builds `ComCon.exe` with that version and attaches it, with its SHA-256 and a signed build provenance attestation, to a new GitHub Release. Tags that contain a hyphen (`v1.2.3-beta.1`) are marked as pre-releases. Tags that are not valid versions fail the build.
+
+Workflow changes must keep the CI hardening:
+
+- Pin actions to full commit SHAs.
+- Keep `permissions` minimal.
+- Never interpolate untrusted input (`${{ }}`) inside `run` scripts.
+
+The repository rejects actions that are not pinned or not GitHub-owned.

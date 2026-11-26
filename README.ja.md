@@ -22,6 +22,12 @@ ComCon は Windows Terminal 用のシリアル/COM ポート接続ツールで�
 
 ComCon はインストーラーのない単一ファイルです。翻訳とデバッグシンボルは exe に埋め込まれています。
 
+各リリースは GitHub Actions でビルドされ、SHA-256 チェックサムと署名付きのビルド来歴（provenance）証明が添付されます。ダウンロードしたファイルがこのリポジトリからビルドされたものか確認するには、次を実行します（[GitHub CLI](https://cli.github.com/) が必要です）。
+
+```shell
+gh attestation verify ComCon.exe --repo akihiro/ComCon
+```
+
 実行ファイルはコード署名されていません。初回起動時に Windows SmartScreen が「Windows によって PC が保護されました」と表示することがあります。その場合は **詳細情報** をクリックし、**実行** を選んでください。あらかじめファイルのプロパティ画面でブロックを解除するか、PowerShell で `Unblock-File C:\Tools\ComCon.exe` を実行しておくこともできます。
 
 ## 使い方

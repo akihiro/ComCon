@@ -21,7 +21,13 @@ Also in the root: `.editorconfig` (code style, including `using` placement), `.g
 - Run: `bin\Debug\net481\ComCon.exe COM3 -b 115200`, or `ComCon.exe --list`. Interactive behaviour can only be checked in a real console (Windows Terminal) attached to a real or virtual COM port, such as a com0com pair.
 - There are no tests. Code style is set in `.editorconfig`.
 - Version: `<Version>` in the csproj is the default for local builds. The release workflow overrides it from the tag (`v1.2.3` → `-p:Version=1.2.3`).
-- CI/release: `.github/workflows/build.yml` builds on every push and PR to `main` (`windows-latest`). On a `v*` tag it also creates a GitHub Release with `ComCon.exe` attached. Branch protection on `main` requires its `build` check.
+- CI/release: `.github/workflows/build.yml` builds on every push and PR to `main` (`windows-latest`). On a `v*` tag it also creates a GitHub Release with `ComCon.exe`, its SHA-256 and a build provenance attestation. Branch protection on `main` requires its `build` check.
+- CI hardening (keep it when editing workflows):
+  - Pin every action to a full commit SHA with a `# vX.Y.Z` comment. The repository enforces SHA pinning and allows only GitHub-owned actions.
+  - Keep `permissions` minimal per job and `persist-credentials: false` on checkout.
+  - Pass untrusted values such as the tag name through `env`, never `${{ }}` inside `run`.
+  - The `release` job runs in the `release` environment, which allows only `v*` tags. A tag ruleset lets only admins create, move or delete `v*` tags.
+  - PRs from external contributors need approval before workflows run. `CODEOWNERS` covers `.github/`.
 
 ## Architecture
 

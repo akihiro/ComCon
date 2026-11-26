@@ -22,6 +22,12 @@ It sends your keystrokes to a serial port unchanged, as VT sequences, and writes
 
 ComCon is a single file with no installer. Translations and debug symbols are embedded in it.
 
+Each release is built by GitHub Actions and comes with a SHA-256 checksum and a signed build provenance attestation. To confirm that the file you downloaded was built from this repository, run (requires the [GitHub CLI](https://cli.github.com/)):
+
+```shell
+gh attestation verify ComCon.exe --repo akihiro/ComCon
+```
+
 The executable is not code-signed. On first run, Windows SmartScreen may show "Windows protected your PC". Click **More info** and then **Run anyway**. You can also unblock the file beforehand in its Properties dialog, or with PowerShell: `Unblock-File C:\Tools\ComCon.exe`.
 
 ## Usage
