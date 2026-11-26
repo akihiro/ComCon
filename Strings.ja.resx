@@ -29,6 +29,7 @@
   -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (既定: none)
   -n, --newline &lt;NL&gt;   Enter で送る改行: cr | lf | crlf (既定: cr)
   -e, --echo           ローカルエコーを有効にする
+  -r, --reconnect      ポートが消えても終了せず、戻ったら再接続する (USB 抜去、デバイスのリセット)
       --encoding &lt;E&gt;   送受信の文字コード (既定: utf-8, 例: shift_jis)
       --no-dtr         DTR を ON にしない
       --no-rts         RTS を ON にしない
@@ -112,6 +113,18 @@
   </data>
   <data name="WriteError" xml:space="preserve">
     <value>送信エラー: {0}</value>
+  </data>
+  <data name="WaitingForPort" xml:space="preserve">
+    <value>{0} を待っています ({1})  (終了: Ctrl+] q)</value>
+  </data>
+  <data name="PortLost" xml:space="preserve">
+    <value>{0} が切断されました ({1})。再接続を待っています...  (終了: Ctrl+] q)</value>
+  </data>
+  <data name="Reconnected" xml:space="preserve">
+    <value>{0} に再接続しました</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>接続されていません。ポートが戻るまで入力は破棄されます。</value>
   </data>
   <data name="ReadError" xml:space="preserve">
     <value>受信エラー (デバイスが切断された可能性があります): {0}</value>

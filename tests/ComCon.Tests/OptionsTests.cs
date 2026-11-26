@@ -20,6 +20,7 @@ namespace ComCon.Tests
             Assert.True(o.DtrEnable);
             Assert.True(o.RtsEnable);
             Assert.False(o.LocalEcho);
+            Assert.False(o.Reconnect);
             Assert.Equal("\r", o.NewLine);
             Assert.Equal(65001, o.Encoding.CodePage);
             Assert.Empty(o.Encoding.GetPreamble());
@@ -145,6 +146,17 @@ namespace ComCon.Tests
         public void ListFlags(string arg)
         {
             Assert.True(Options.Parse(new[] { arg }).ListPorts);
+        }
+
+        [Theory]
+        [InlineData("-r")]
+        [InlineData("--reconnect")]
+        public void ReconnectFlags(string arg)
+        {
+            Options o = Options.Parse(new[] { "COM3", arg });
+
+            Assert.True(o.Reconnect);
+            Assert.Equal("COM3", o.PortName);
         }
 
         [Fact]
