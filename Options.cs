@@ -19,6 +19,7 @@ namespace ComCon
         public bool LocalEcho;
         public bool Reconnect;
         public string NewLine = "\r";
+        public ReceiveNewline ReceiveNewline = ReceiveNewline.None;
         public Encoding Encoding = new UTF8Encoding(false);
 
         public CultureInfo Language;
@@ -91,6 +92,9 @@ namespace ComCon
                     case "-n":
                     case "--newline":
                         o.NewLine = ParseNewLine(a, Next(args, ref i));
+                        break;
+                    case "--recv-newline":
+                        o.ReceiveNewline = ParseReceiveNewline(a, Next(args, ref i));
                         break;
                     case "--encoding":
                         o.Encoding = ParseEncoding(Next(args, ref i));
@@ -220,6 +224,17 @@ namespace ComCon
                 case "cr": return "\r";
                 case "lf": return "\n";
                 case "crlf": return "\r\n";
+                default: throw new ArgumentException(Localization.Format(Strings.InvalidValue, name, s));
+            }
+        }
+
+        private static ReceiveNewline ParseReceiveNewline(string name, string s)
+        {
+            switch (s.ToLowerInvariant())
+            {
+                case "none": return ReceiveNewline.None;
+                case "lf": return ReceiveNewline.Lf;
+                case "cr": return ReceiveNewline.Cr;
                 default: throw new ArgumentException(Localization.Format(Strings.InvalidValue, name, s));
             }
         }

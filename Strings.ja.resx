@@ -28,6 +28,8 @@
   -s, --stop &lt;S&gt;       1 | 1.5 | 2 (既定: 1)
   -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (既定: none)
   -n, --newline &lt;NL&gt;   Enter で送る改行: cr | lf | crlf (既定: cr)
+      --recv-newline &lt;M&gt;
+                       受信した改行の扱い: none | lf (LF のみ送るデバイス) | cr (CR のみ) (既定: none)
   -e, --echo           ローカルエコーを有効にする
   -r, --reconnect      ポートが消えても終了せず、戻ったら再接続する (USB 抜去、デバイスのリセット)
       --encoding &lt;E&gt;   送受信の文字コード (既定: utf-8, 例: shift_jis)
