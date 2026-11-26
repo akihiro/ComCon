@@ -18,6 +18,8 @@ namespace ComCon
         public bool RtsEnable = true;
         public bool LocalEcho;
         public bool Reconnect;
+        public string LogFile;
+        public bool LogTimestamp;
         public string NewLine = "\r";
         public ReceiveNewline ReceiveNewline = ReceiveNewline.None;
         public Encoding Encoding = new UTF8Encoding(false);
@@ -93,6 +95,12 @@ namespace ComCon
                     case "--newline":
                         o.NewLine = ParseNewLine(a, Next(args, ref i));
                         break;
+                    case "--log":
+                        o.LogFile = Next(args, ref i);
+                        break;
+                    case "--log-timestamp":
+                        o.LogTimestamp = true;
+                        break;
                     case "--recv-newline":
                         o.ReceiveNewline = ParseReceiveNewline(a, Next(args, ref i));
                         break;
@@ -126,6 +134,11 @@ namespace ComCon
                         o.PortName = NormalizePortName(a);
                         break;
                 }
+            }
+
+            if (o.LogTimestamp && o.LogFile == null)
+            {
+                throw new ArgumentException(Strings.LogTimestampRequiresLog);
             }
 
             return o;

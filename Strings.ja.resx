@@ -32,6 +32,8 @@
                        受信した改行の扱い: none | lf (LF のみ送るデバイス) | cr (CR のみ) (既定: none)
   -e, --echo           ローカルエコーを有効にする
   -r, --reconnect      ポートが消えても終了せず、戻ったら再接続する (USB 抜去、デバイスのリセット)
+      --log &lt;FILE&gt;     受信データを FILE にも追記する
+      --log-timestamp  ログの各行の先頭にタイムスタンプを付ける
       --encoding &lt;E&gt;   送受信の文字コード (既定: utf-8, 例: shift_jis)
       --no-dtr         DTR を ON にしない
       --no-rts         RTS を ON にしない
@@ -58,6 +60,9 @@
   </data>
   <data name="InvalidValue" xml:space="preserve">
     <value>{0} の値が不正です: {1}</value>
+  </data>
+  <data name="LogTimestampRequiresLog" xml:space="preserve">
+    <value>--log-timestamp には --log &lt;FILE&gt; の指定が必要です。</value>
   </data>
   <data name="UnknownEncoding" xml:space="preserve">
     <value>不明な文字コード: {0}</value>
@@ -127,6 +132,15 @@
   </data>
   <data name="NotConnected" xml:space="preserve">
     <value>接続されていません。ポートが戻るまで入力は破棄されます。</value>
+  </data>
+  <data name="CannotOpenLog" xml:space="preserve">
+    <value>ログファイル {0} を開けません: {1}</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>受信データを {0} に記録しています</value>
+  </data>
+  <data name="LogWriteError" xml:space="preserve">
+    <value>ログファイルに書き込めないため、記録を停止しました: {0}</value>
   </data>
   <data name="ReadError" xml:space="preserve">
     <value>受信エラー (デバイスが切断された可能性があります): {0}</value>
