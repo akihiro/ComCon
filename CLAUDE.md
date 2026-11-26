@@ -30,7 +30,7 @@ The repo root holds `.gitignore` (the standard Dotnet.gitignore, which excludes 
   - Console writes are serialized by a lock inside `TerminalConsole`.
 - **Localization:**
   - Every user-facing message comes from `Strings.resx`, which holds English, the neutral language (`<NeutralLanguage>en`). `Strings.ja.resx` holds Japanese.
-  - The strongly typed `ComCon.Strings` class is generated **at build time** into `obj/` through the `StronglyTyped*` metadata in the csproj. There is no checked-in `Strings.Designer.cs`, so new keys become visible to the IDE only after a build.
+  - The strongly typed `ComCon.Strings` class is generated **at build time** into `obj/` through the `StronglyTyped*` metadata in the csproj. There is no checked-in `Strings.Designer.cs`. Design-time builds normally skip resource generation, so the csproj target `GenerateStronglyTypedResourcesBeforeCompile` runs `PrepareResources` before compiling. That keeps the class visible to IntelliSense even before the first build. Keep that target.
   - Use `Localization.Format` for placeholders.
   - When adding a message, add the key to every `.resx` file.
   - A new language needs only a new `Strings.<culture>.resx`.

@@ -28,4 +28,11 @@
       <LogicalName>ComCon.%(Filename).resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <!--
+    Design-time builds (used by IntelliSense in Visual Studio and the C# extension for VS Code) run Compile without
+    PrepareResources, so the generated Strings.Designer.cs is never created or added to Compile and ComCon.Strings
+    shows as missing. Run resource generation before compiling in every build. In a normal build PrepareResources
+    has already run, so this is a no-op.
+  -->
+  <Target Name="GenerateStronglyTypedResourcesBeforeCompile" BeforeTargets="BeforeCompile;CompileDesignTime" DependsOnTargets="PrepareResources" />
 </Project>
