@@ -1,7 +1,9 @@
 namespace ComCon
 {
     using System;
+    using System.IO;
     using System.IO.Ports;
+    using System.Linq;
     using System.Text;
     using System.Threading;
 
@@ -9,20 +11,27 @@ namespace ComCon
     /// Connects a serial port and the console in both directions.
     /// A dedicated thread reads from SerialPort.BaseStream and writes to the console.
     /// The main thread reads keystrokes, handles local commands that start with Ctrl+], and writes the rest to the port.
+    /// With --reconnect, the receiver thread also reopens the port after it disappears (USB unplug, device reset).
     /// </summary>
     internal sealed class Session
     {
         private const char EscapeChar = '\x1d'; // Ctrl+]
         private const int BreakMilliseconds = 250;
+        private const int ReconnectPollMilliseconds = 500;
 
         private readonly Options options;
-        private readonly SerialPort port;
         private readonly Decoder decoder;
         private readonly Encoder encoder;
+
+        // Guards "port". The receiver thread replaces it on reconnect; the main thread writes through it.
+        private readonly object portLock = new object();
+        private SerialPort port;
+
         private TerminalConsole term;
         private volatile bool stopping;
         private bool escapePending;
         private bool localEcho;
+        private bool notConnectedShown;
 
         public Session(Options options)
         {
@@ -30,30 +39,20 @@ namespace ComCon
             localEcho = options.LocalEcho;
             decoder = options.Encoding.GetDecoder();
             encoder = options.Encoding.GetEncoder();
-
-            port = new SerialPort(options.PortName, options.BaudRate, options.Parity, options.DataBits, options.StopBits)
-            {
-                Handshake = options.Handshake,
-                DtrEnable = options.DtrEnable,
-                ReadTimeout = SerialPort.InfiniteTimeout,
-                WriteTimeout = 3000,
-            };
-
-            // With RTS/CTS flow control the driver owns RTS, and setting it by hand throws.
-            if (options.Handshake == Handshake.None || options.Handshake == Handshake.XOnXOff)
-            {
-                port.RtsEnable = options.RtsEnable;
-            }
         }
 
         public int Run()
         {
-            port.Open();
-
-            // After a USB-serial device is unplugged, the .NET Framework SerialStream finalizer
-            // can throw and crash the process, so suppress finalization.
-            // This is safe because Close() disposes the stream explicitly.
-            GC.SuppressFinalize(port.BaseStream);
+            string initialError = null;
+            try
+            {
+                port = OpenPort();
+            }
+            catch (Exception ex) when (options.Reconnect && (ex is IOException || ex is UnauthorizedAccessException))
+            {
+                // With --reconnect, a missing or busy port at startup is waited for like a lost one.
+                initialError = ex.Message;
+            }
 
             using (term = new TerminalConsole())
             {
@@ -66,7 +65,14 @@ namespace ComCon
                     // Failing to set the title is harmless.
                 }
 
-                term.WriteStatus(Localization.Format(Strings.Connected, options.Summary));
+                if (port != null)
+                {
+                    term.WriteStatus(Localization.Format(Strings.Connected, options.Summary));
+                }
+                else
+                {
+                    term.WriteStatus(Localization.Format(Strings.WaitingForPort, options.PortName, initialError));
+                }
 
                 var receiver = new Thread(ReceiveLoop) { IsBackground = true, Name = "ComCon receiver" };
                 receiver.Start();
@@ -86,6 +92,51 @@ namespace ComCon
             }
 
             return 0;
+        }
+
+        /// <summary>Creates and opens a port with the configured settings. Throws if it cannot be opened.</summary>
+        private SerialPort OpenPort()
+        {
+            var p = new SerialPort(options.PortName, options.BaudRate, options.Parity, options.DataBits, options.StopBits)
+            {
+                Handshake = options.Handshake,
+                DtrEnable = options.DtrEnable,
+                ReadTimeout = SerialPort.InfiniteTimeout,
+                WriteTimeout = 3000,
+            };
+
+            // With RTS/CTS flow control the driver owns RTS, and setting it by hand throws.
+            if (options.Handshake == Handshake.None || options.Handshake == Handshake.XOnXOff)
+            {
+                p.RtsEnable = options.RtsEnable;
+            }
+
+            try
+            {
+                p.Open();
+            }
+            catch
+            {
+                p.Dispose();
+                throw;
+            }
+
+            // After a USB-serial device is unplugged, the .NET Framework SerialStream finalizer
+            // can throw and crash the process, so suppress finalization.
+            // This is safe because Close() disposes the stream explicitly.
+            GC.SuppressFinalize(p.BaseStream);
+            return p;
+        }
+
+        private SerialPort CurrentPort
+        {
+            get
+            {
+                lock (portLock)
+                {
+                    return port;
+                }
+            }
         }
 
         private void InteractiveLoop()
@@ -178,11 +229,18 @@ namespace ComCon
 
         private void SendBreak()
         {
+            SerialPort p = CurrentPort;
+            if (p == null)
+            {
+                term.WriteStatus(Strings.NotConnected);
+                return;
+            }
+
             try
             {
-                port.BreakState = true;
+                p.BreakState = true;
                 Thread.Sleep(BreakMilliseconds);
-                port.BreakState = false;
+                p.BreakState = false;
                 term.WriteStatus(Strings.BreakSent);
             }
             catch (Exception ex)
@@ -220,9 +278,22 @@ namespace ComCon
                 return;
             }
 
+            SerialPort p = CurrentPort;
+            if (p == null)
+            {
+                // Only while waiting for --reconnect. Say so once per outage instead of on every keystroke.
+                if (!notConnectedShown)
+                {
+                    notConnectedShown = true;
+                    term.WriteStatus(Strings.NotConnected);
+                }
+
+                return;
+            }
+
             try
             {
-                port.Write(bytes, 0, count);
+                p.Write(bytes, 0, count);
             }
             catch (TimeoutException)
             {
@@ -230,7 +301,19 @@ namespace ComCon
             }
             catch (Exception ex)
             {
-                Fatal(Localization.Format(Strings.WriteError, ex.Message));
+                if (stopping)
+                {
+                    return;
+                }
+
+                if (options.Reconnect)
+                {
+                    PortLost(p, ex.Message);
+                }
+                else
+                {
+                    Fatal(Localization.Format(Strings.WriteError, ex.Message));
+                }
             }
         }
 
@@ -241,18 +324,36 @@ namespace ComCon
 
             while (!stopping)
             {
+                SerialPort p = CurrentPort;
+                if (p == null)
+                {
+                    if (!TryReconnect())
+                    {
+                        Thread.Sleep(ReconnectPollMilliseconds);
+                    }
+
+                    continue;
+                }
+
                 int n;
                 try
                 {
-                    n = port.BaseStream.Read(buffer, 0, buffer.Length);
+                    n = p.BaseStream.Read(buffer, 0, buffer.Length);
                 }
                 catch (Exception ex)
                 {
-                    if (!stopping)
+                    if (stopping)
                     {
-                        Fatal(Localization.Format(Strings.ReadError, ex.Message));
+                        return;
                     }
 
+                    if (options.Reconnect)
+                    {
+                        PortLost(p, ex.Message);
+                        continue;
+                    }
+
+                    Fatal(Localization.Format(Strings.ReadError, ex.Message));
                     return;
                 }
 
@@ -275,6 +376,66 @@ namespace ComCon
         }
 
         /// <summary>
+        /// Called from either thread when the port fails with --reconnect. Closes it and lets the receiver
+        /// thread wait for it to come back. Only the first caller for a given port reports the loss.
+        /// </summary>
+        private void PortLost(SerialPort lost, string reason)
+        {
+            lock (portLock)
+            {
+                if (!ReferenceEquals(port, lost))
+                {
+                    return;
+                }
+
+                port = null;
+            }
+
+            CloseQuietly(lost);
+            term.WriteStatus(Localization.Format(Strings.PortLost, options.PortName, reason));
+        }
+
+        /// <summary>Tries once to reopen the port. Returns true when connected.</summary>
+        private bool TryReconnect()
+        {
+            // Opening a port that does not exist is slow on some drivers, so check that it is present first.
+            if (!SerialPort.GetPortNames().Contains(options.PortName, StringComparer.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            SerialPort p;
+            try
+            {
+                p = OpenPort();
+            }
+            catch (Exception)
+            {
+                // The device may still be enumerating, or another program grabbed it. Try again later.
+                // Catch everything: an exception escaping this background thread would end the process.
+                return false;
+            }
+
+            lock (portLock)
+            {
+                if (stopping)
+                {
+                    CloseQuietly(p);
+                    return false;
+                }
+
+                port = p;
+                notConnectedShown = false;
+            }
+
+            // Drop any partial multi-byte character left over from before the outage.
+            // This runs on the receiver thread, which owns the decoder.
+            decoder.Reset();
+            term.WriteStatus(Localization.Format(Strings.Reconnected, options.Summary));
+            return true;
+        }
+
+        /// <summary>
         /// Handles an unrecoverable error. The main thread is blocked waiting for a keystroke,
         /// so restore the console and then exit the whole process.
         /// </summary>
@@ -289,9 +450,26 @@ namespace ComCon
 
         private void ClosePort()
         {
+            SerialPort p;
+            lock (portLock)
+            {
+                p = port;
+                port = null;
+            }
+
+            CloseQuietly(p);
+        }
+
+        private static void CloseQuietly(SerialPort p)
+        {
+            if (p == null)
+            {
+                return;
+            }
+
             try
             {
-                port.Close();
+                p.Close();
             }
             catch (Exception)
             {

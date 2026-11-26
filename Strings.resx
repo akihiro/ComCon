@@ -33,6 +33,7 @@ Options:
   -f, --flow &lt;F&gt;       none | rtscts | xonxoff | both (default: none)
   -n, --newline &lt;NL&gt;   Newline sent for Enter: cr | lf | crlf (default: cr)
   -e, --echo           Enable local echo
+  -r, --reconnect      Wait for the port and reconnect when it disappears (USB unplug, device reset)
       --encoding &lt;E&gt;   Text encoding for both directions (default: utf-8, e.g. shift_jis)
       --no-dtr         Do not turn DTR on
       --no-rts         Do not turn RTS on
@@ -116,6 +117,18 @@ While connected, press Ctrl+] followed by:
   </data>
   <data name="WriteError" xml:space="preserve">
     <value>Write error: {0}</value>
+  </data>
+  <data name="WaitingForPort" xml:space="preserve">
+    <value>Waiting for {0} ({1})  (quit: Ctrl+] q)</value>
+  </data>
+  <data name="PortLost" xml:space="preserve">
+    <value>Lost {0} ({1}). Waiting for it to come back...  (quit: Ctrl+] q)</value>
+  </data>
+  <data name="Reconnected" xml:space="preserve">
+    <value>Reconnected to {0}</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Not connected. Input is discarded until the port comes back.</value>
   </data>
   <data name="ReadError" xml:space="preserve">
     <value>Read error (the device may have been disconnected): {0}</value>

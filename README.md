@@ -38,6 +38,7 @@ ComCon --list                    List the available ports
 ComCon COM3                      Connect to COM3 at 115200 8N1
 ComCon COM3 -b 9600 -p even      Connect at 9600 8E1
 ComCon 3 -f rtscts -n crlf       Use RTS/CTS flow control and send CRLF on Enter
+ComCon COM3 -r                   Reconnect automatically after an unplug or device reset
 ```
 
 Run `ComCon --help` for the full list of options, and `ComCon --version` to show the version.

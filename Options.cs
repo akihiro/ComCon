@@ -17,6 +17,7 @@ namespace ComCon
         public bool DtrEnable = true;
         public bool RtsEnable = true;
         public bool LocalEcho;
+        public bool Reconnect;
         public string NewLine = "\r";
         public Encoding Encoding = new UTF8Encoding(false);
 
@@ -96,6 +97,10 @@ namespace ComCon
                         break;
                     case "--lang":
                         o.Language = ParseLanguage(a, Next(args, ref i));
+                        break;
+                    case "-r":
+                    case "--reconnect":
+                        o.Reconnect = true;
                         break;
                     case "--no-dtr":
                         o.DtrEnable = false;

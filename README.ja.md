@@ -38,6 +38,7 @@ ComCon --list                    使用可能なポートを一覧表示
 ComCon COM3                      COM3 に 115200 8N1 で接続
 ComCon COM3 -b 9600 -p even      9600 8E1 で接続
 ComCon 3 -f rtscts -n crlf       RTS/CTS フロー制御を使い、Enter で CRLF を送信
+ComCon COM3 -r                   抜き差しやデバイスのリセット後に自動で再接続
 ```
 
 すべてのオプションは `ComCon --help` で、バージョンは `ComCon --version` で確認できます。

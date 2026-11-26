@@ -51,10 +51,13 @@ Also in the root: `.editorconfig` (code style, including `using` placement), `.g
   - New dependencies must be GAC/Framework assemblies, or be embedded too.
   - The UI culture is the OS default. `--lang` overrides it, and `Localization.ApplyFromArgs` applies it before full parsing so that even parse errors appear in the chosen language. It also sets `DefaultThreadCurrentUICulture`, so the receiver thread uses the same language.
 - On a fatal port error (such as a USB device being unplugged), `Session.Fatal` restores the console and calls `Environment.Exit`. This is needed because the main thread can't be woken while it is blocked in `ReadConsoleW`.
+- With `--reconnect`, a port error calls `Session.PortLost` instead of `Fatal`. It closes the port and sets `port` to null, and the receiver thread polls `TryReconnect` until the port reappears. A missing port at startup is handled the same way.
+  - `port` is swapped under `portLock`. Code that uses the port takes a snapshot through `CurrentPort` and treats null as "not connected".
+  - `PortLost` can be called from both threads. Only the call that still matches the current port reports the loss.
 
 ## Gotchas
 
-- `GC.SuppressFinalize(port.BaseStream)` right after `Open()` works around a .NET Framework bug: after a USB-serial unplug, the `SerialStream` finalizer can crash the process. Keep it.
+- `GC.SuppressFinalize(p.BaseStream)` in `Session.OpenPort`, right after `Open()`, works around a .NET Framework bug: after a USB-serial unplug, the `SerialStream` finalizer can crash the process. Keep it.
 - Setting `SerialPort.RtsEnable` while `Handshake` uses RTS throws an exception. That's why `Session` only sets it for `None` and `XOnXOff`.
 - `System.Management` (WMI, used for friendly port names) is an explicit `<Reference>` in the csproj.
 - `using` directives go inside the `namespace` block, not at the top of the file. Keep that style.
