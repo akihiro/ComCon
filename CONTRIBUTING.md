@@ -19,7 +19,7 @@ dotnet build -c Release   # Release: bin\Release\net481\ComCon.exe
 
 The build must produce a single file, `ComCon.exe`. Translations and the PDB are embedded in it. New dependencies must be .NET Framework (GAC) assemblies, or be embedded too.
 
-There are no automated tests. Check interactive behaviour in Windows Terminal with a real device or a virtual COM port pair such as [com0com](https://com0com.sourceforge.net/).
+Run the unit tests with `dotnet test tests/ComCon.Tests`. They cover argument parsing and check that every translation has the same keys and placeholders as `Strings.resx`. CI runs them on every pull request. Console and serial behaviour has no automated tests, so check it in Windows Terminal with a real device or a virtual COM port pair such as [com0com](https://com0com.sourceforge.net/).
 
 ## Code style
 

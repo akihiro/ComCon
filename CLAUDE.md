@@ -10,7 +10,7 @@ All documentation (README, CLAUDE.md, CONTRIBUTING, code comments) is written in
 
 ## Layout
 
-The project lives directly in the repo root: `ComCon.csproj`, the `*.cs` sources and the `Strings*.resx` files. There is no `.sln` file and no project subfolder. `.gitignore` excludes `bin/` and `obj/`.
+The project lives directly in the repo root: `ComCon.csproj`, the `*.cs` sources and the `Strings*.resx` files. There is no `.sln` file. The only subfolder project is the test project `tests/ComCon.Tests/`. `.gitignore` excludes `bin/` and `obj/`.
 
 Also in the root: `.editorconfig` (code style, including `using` placement), `.gitattributes` (line endings), `CONTRIBUTING.md`, `SECURITY.md` and `LICENSE` (Apache-2.0). `.github/` holds the CI/release workflow, the release-note categories (`release.yml`, grouped by PR label), the Dependabot config, `CODEOWNERS`, and the issue and PR templates. CodeQL code scanning (C# and Actions) uses GitHub's default setup, so there is no workflow file for it.
 
@@ -19,7 +19,7 @@ Also in the root: `.editorconfig` (code style, including `using` placement), `.g
 - SDK-style project (`ComCon.csproj`) that targets **.NET Framework 4.8.1** (`net481`), not modern .NET. Windows only. Reference assemblies come from the auto-referenced `Microsoft.NETFramework.ReferenceAssemblies` NuGet package, so no locally installed targeting pack is needed.
 - Build: `dotnet build` from the repo root (`dotnet build -c Release` for a release build).
 - Run: `bin\Debug\net481\ComCon.exe COM3 -b 115200`, or `ComCon.exe --list`. Interactive behaviour can only be checked in a real console (Windows Terminal) attached to a real or virtual COM port, such as a com0com pair.
-- There are no tests. Code style is set in `.editorconfig`.
+- Tests: `dotnet test tests/ComCon.Tests` (xUnit, net481). They cover `Options` parsing and the localization resources: every `Strings.<culture>.resx` must have the same keys and `{n}` placeholders as `Strings.resx`. The test project sees internals through `InternalsVisibleTo`, and the root csproj excludes `tests/**` from its globs. Console and serial behaviour is not covered. Code style is set in `.editorconfig`.
 - Version: `<Version>` in the csproj is the default for local builds. The release workflow overrides it from the tag (`v1.2.3` → `-p:Version=1.2.3`).
 - CI/release: `.github/workflows/build.yml` builds on every push and PR to `main` (`windows-latest`). On a `v*` tag it also creates a GitHub Release with `ComCon.exe`, its SHA-256 and a build provenance attestation. `main` is protected by rulesets that apply to admins too (no bypass). Every change goes through a pull request (squash merge only, no approval needed). The `build` check from GitHub Actions must pass. Force pushes and deletion are blocked. Work on a branch and open a PR. Never push to `main` directly.
 - CI hardening (keep it when editing workflows):
