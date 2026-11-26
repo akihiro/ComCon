@@ -21,7 +21,8 @@ body:
     id: version
     attributes:
       label: ComCon version
-      description: The release you downloaded, or the commit you built.
+      description: Output of `ComCon --version`.
+      placeholder: ComCon 0.1.0+73e7ee6...
     validations:
       required: true
   - type: input

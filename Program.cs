@@ -2,6 +2,7 @@ namespace ComCon
 {
     using System;
     using System.IO;
+    using System.Reflection;
     using System.Text;
 
     internal static class Program
@@ -68,6 +69,12 @@ namespace ComCon
                 return 0;
             }
 
+            if (options.ShowVersion)
+            {
+                Console.WriteLine("ComCon " + GetVersion());
+                return 0;
+            }
+
             if (options.ListPorts)
             {
                 PortList.Print();
@@ -107,6 +114,15 @@ namespace ComCon
                 Console.Error.WriteLine(ex.Message);
                 return 2;
             }
+        }
+
+        /// <summary>The version set at build time, such as "1.2.3+&lt;commit&gt;" (from the csproj Version or the release tag).</summary>
+        private static string GetVersion()
+        {
+            Assembly assembly = typeof(Program).Assembly;
+            var informational = (AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(
+                assembly, typeof(AssemblyInformationalVersionAttribute));
+            return informational != null ? informational.InformationalVersion : assembly.GetName().Version.ToString();
         }
     }
 }

@@ -39,7 +39,7 @@ ComCon COM3 -b 9600 -p even      Connect at 9600 8E1
 ComCon 3 -f rtscts -n crlf       Use RTS/CTS flow control and send CRLF on Enter
 ```
 
-Run `ComCon --help` for the full list of options.
+Run `ComCon --help` for the full list of options, and `ComCon --version` to show the version.
 
 Messages are shown in the Windows display language. English and Japanese are available; other languages fall back to English. Use `--lang en` or `--lang ja` to override.
 

@@ -24,6 +24,7 @@ namespace ComCon
 
         public bool ShowHelp;
         public bool ListPorts;
+        public bool ShowVersion;
 
         /// <summary>A short summary of the settings, such as "COM3 115200 8N1".</summary>
         public string Summary
@@ -53,6 +54,10 @@ namespace ComCon
                     case "--help":
                     case "/?":
                         o.ShowHelp = true;
+                        break;
+                    case "-v":
+                    case "--version":
+                        o.ShowVersion = true;
                         break;
                     case "-l":
                     case "--list":

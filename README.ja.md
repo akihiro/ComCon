@@ -39,7 +39,7 @@ ComCon COM3 -b 9600 -p even      9600 8E1 で接続
 ComCon 3 -f rtscts -n crlf       RTS/CTS フロー制御を使い、Enter で CRLF を送信
 ```
 
-すべてのオプションは `ComCon --help` で確認できます。
+すべてのオプションは `ComCon --help` で、バージョンは `ComCon --version` で確認できます。
 
 メッセージは Windows の表示言語で表示されます。英語と日本語に対応しており、それ以外の言語では英語になります。`--lang en` または `--lang ja` で切り替えられます。
 

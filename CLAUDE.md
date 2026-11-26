@@ -12,7 +12,7 @@ All documentation (README, CLAUDE.md, CONTRIBUTING, code comments) is written in
 
 The project lives directly in the repo root: `ComCon.csproj`, the `*.cs` sources and the `Strings*.resx` files. There is no `.sln` file and no project subfolder. `.gitignore` excludes `bin/` and `obj/`.
 
-Also in the root: `.editorconfig` (code style, including `using` placement), `.gitattributes` (line endings), `CONTRIBUTING.md`, `SECURITY.md` and `LICENSE` (Apache-2.0). `.github/` holds the CI/release workflow, Dependabot config, and the issue and PR templates.
+Also in the root: `.editorconfig` (code style, including `using` placement), `.gitattributes` (line endings), `CONTRIBUTING.md`, `SECURITY.md` and `LICENSE` (Apache-2.0). `.github/` holds the CI/release workflow, the release-note categories (`release.yml`, grouped by PR label), the Dependabot config, `CODEOWNERS`, and the issue and PR templates. CodeQL code scanning (C# and Actions) uses GitHub's default setup, so there is no workflow file for it.
 
 ## Build & Run
 

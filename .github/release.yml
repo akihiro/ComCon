@@ -1,0 +1,19 @@
+# Categories for automatically generated release notes, chosen by PR label.
+changelog:
+  exclude:
+    labels: [ignore-for-release, duplicate, invalid, wontfix]
+  categories:
+    - title: Breaking changes
+      labels: [breaking-change]
+    - title: New features
+      labels: [enhancement]
+    - title: Bug fixes
+      labels: [bug]
+    - title: Translations
+      labels: [translation]
+    - title: Documentation
+      labels: [documentation]
+    - title: Dependencies and CI
+      labels: [dependencies, github_actions]
+    - title: Other changes
+      labels: ["*"]

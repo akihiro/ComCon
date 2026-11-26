@@ -4,7 +4,7 @@ Bug reports, feature requests, translations and pull requests are welcome.
 
 ## Reporting bugs
 
-Use the [bug report form](https://github.com/akihiro/ComCon/issues/new/choose). Include the exact command line, the ComCon version and the serial adapter you use. Many serial problems depend on the driver (FTDI, CP210x, CH340 and so on).
+Use the [bug report form](https://github.com/akihiro/ComCon/issues/new/choose). Include the exact command line, the output of `ComCon --version` and the serial adapter you use. Many serial problems depend on the driver (FTDI, CP210x, CH340 and so on).
 
 Please report security issues privately. See [SECURITY.md](SECURITY.md).
 
@@ -46,7 +46,7 @@ By contributing, you agree that your contributions are licensed under the [Apach
 
 ## Releases (maintainers)
 
-Push a tag such as `v1.2.3`. Only admins can create `v*` tags. The workflow builds `ComCon.exe` with that version and attaches it, with its SHA-256 and a signed build provenance attestation, to a new GitHub Release. Tags that contain a hyphen (`v1.2.3-beta.1`) are marked as pre-releases. Tags that are not valid versions fail the build.
+Push a tag such as `v1.2.3`. Only admins can create `v*` tags. The workflow builds `ComCon.exe` with that version and attaches it, with its SHA-256 and a signed build provenance attestation, to a new GitHub Release. Tags that contain a hyphen (`v1.2.3-beta.1`) are marked as pre-releases. Tags that are not valid versions fail the build. The release notes are generated from merged pull requests and grouped by label, as configured in `.github/release.yml`. Label each pull request before merging: `breaking-change`, `enhancement`, `bug`, `translation`, `documentation`, or `ignore-for-release`.
 
 Workflow changes must keep the CI hardening:
 

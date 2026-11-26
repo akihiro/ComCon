@@ -38,6 +38,7 @@ Options:
       --no-rts         Do not turn RTS on
       --lang &lt;L&gt;       Message language: en | ja (default: OS language)
   -l, --list           List available ports
+  -v, --version        Show the version
   -h, --help           Show this help
 
 While connected, press Ctrl+] followed by:
