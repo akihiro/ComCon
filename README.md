@@ -1,5 +1,11 @@
 # ComCon
 
+[![build](https://github.com/akihiro/ComCon/actions/workflows/build.yml/badge.svg)](https://github.com/akihiro/ComCon/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/v/release/akihiro/ComCon?include_prereleases)](https://github.com/akihiro/ComCon/releases/latest)
+[![license](https://img.shields.io/github/license/akihiro/ComCon)](LICENSE)
+
+[日本語](README.ja.md)
+
 ComCon is a Serial/COM connector for Windows Terminal.
 
 It sends your keystrokes to a serial port unchanged, as VT sequences, and writes the data it receives straight to Windows Terminal. Arrow keys, colours and cursor movement from the remote side (a Linux console, for example) work as they would in any terminal.
@@ -8,6 +14,15 @@ It sends your keystrokes to a serial port unchanged, as VT sequences, and writes
 
 - Windows 10 version 1809 or later (Windows Terminal recommended)
 - .NET Framework 4.8.1
+
+## Installation
+
+1. Download `ComCon.exe` from the [latest release](https://github.com/akihiro/ComCon/releases/latest).
+2. Put it in any folder, for example `C:\Tools`. Add that folder to `PATH` if you want to run `ComCon` from anywhere.
+
+ComCon is a single file with no installer. Translations and debug symbols are embedded in it.
+
+The executable is not code-signed. On first run, Windows SmartScreen may show "Windows protected your PC". Click **More info** and then **Run anyway**. You can also unblock the file beforehand in its Properties dialog, or with PowerShell: `Unblock-File C:\Tools\ComCon.exe`.
 
 ## Usage
 
@@ -43,7 +58,7 @@ To connect straight from a new tab, add a profile like this to `profiles.list` i
 ```json
 {
     "name": "COM3 (115200)",
-    "commandline": "C:\\Tools\\ComCon.exe COM3 -b 115200",
+    "commandline": "C:\Tools\ComCon.exe COM3 -b 115200",
     "icon": "\uE703"
 }
 ```
@@ -55,3 +70,11 @@ dotnet build -c Release
 ```
 
 The output is a single file, `bin\Release\net481\ComCon.exe`. Translations and debug symbols are embedded in it, so copying this one file is enough to install ComCon.
+
+## Contributing
+
+Bug reports, translations and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Please report security issues privately, as described in [SECURITY.md](SECURITY.md).
+
+## License
+
+ComCon is licensed under the [Apache License 2.0](LICENSE).

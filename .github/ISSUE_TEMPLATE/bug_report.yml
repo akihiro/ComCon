@@ -1,0 +1,45 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command line
+      description: The exact ComCon command you ran.
+      placeholder: ComCon COM3 -b 115200 -f rtscts
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ComCon version
+      description: The release you downloaded, or the commit you built.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Serial device
+      description: The USB-serial adapter or chip (FTDI, CP210x, CH340, ...), or a virtual port such as com0com, and what is connected to it.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Windows and terminal versions
+      placeholder: Windows 11 24H2, Windows Terminal 1.22
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output or screenshot
+      description: Error messages, or a screenshot if the display looks wrong.

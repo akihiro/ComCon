@@ -1,4 +1,4 @@
-﻿namespace ComCon
+namespace ComCon
 {
     using System;
     using System.IO;

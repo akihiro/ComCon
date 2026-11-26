@@ -8,6 +8,21 @@
     <DebugType>embedded</DebugType>
     <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Default for local builds. The release workflow overrides it from the tag (v1.2.3 -> -p:Version=1.2.3). -->
+    <Version>0.0.0-dev</Version>
+    <Product>ComCon</Product>
+    <Title>ComCon</Title>
+    <Description>Serial/COM connector for Windows Terminal</Description>
+    <Authors>akihiro</Authors>
+    <Company>akihiro</Company>
+    <Copyright>Copyright 2026 akihiro</Copyright>
+    <RepositoryUrl>https://github.com/akihiro/ComCon</RepositoryUrl>
+  </PropertyGroup>
+  <!-- Reproducible builds in CI (normalized paths in the embedded PDB). -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Management" />
   </ItemGroup>

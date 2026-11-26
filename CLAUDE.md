@@ -4,20 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ComCon is a raw serial terminal for Windows Terminal. Keystrokes go to a COM port as VT sequences, and bytes received from the port are written straight to the console so that Windows Terminal renders them, colours and cursor movement included. Usage and key bindings are documented in `ComCon/README.md`.
+ComCon is a raw serial terminal for Windows Terminal. Keystrokes go to a COM port as VT sequences, and bytes received from the port are written straight to the console so that Windows Terminal renders them, colours and cursor movement included. Usage and key bindings are documented in `README.md`.
 
-All documentation (README, CLAUDE.md, code comments) is written in English.
+All documentation (README, CLAUDE.md, CONTRIBUTING, code comments) is written in English. The one exception is `README.ja.md`, a Japanese translation of `README.md`. When `README.md` changes, update `README.ja.md` to match.
 
 ## Layout
 
-The repo root holds `.gitignore` (the standard Dotnet.gitignore, which excludes `bin/` and `obj/`) and the single project folder `ComCon/`. There is no `.sln` file.
+The project lives directly in the repo root: `ComCon.csproj`, the `*.cs` sources and the `Strings*.resx` files. There is no `.sln` file and no project subfolder. `.gitignore` excludes `bin/` and `obj/`.
+
+Also in the root: `.editorconfig` (code style, including `using` placement), `.gitattributes` (line endings), `CONTRIBUTING.md`, `SECURITY.md` and `LICENSE` (Apache-2.0). `.github/` holds the CI/release workflow, Dependabot config, and the issue and PR templates.
 
 ## Build & Run
 
-- SDK-style project (`ComCon/ComCon.csproj`) that targets **.NET Framework 4.8.1** (`net481`), not modern .NET. Windows only. Reference assemblies come from the auto-referenced `Microsoft.NETFramework.ReferenceAssemblies` NuGet package, so no locally installed targeting pack is needed.
-- Build: `dotnet build ComCon` from the repo root.
-- Run: `ComCon\bin\Debug\net481\ComCon.exe COM3 -b 115200`, or `ComCon.exe --list`. Interactive behaviour can only be checked in a real console (Windows Terminal) attached to a real or virtual COM port, such as a com0com pair.
-- There are no tests or lint configuration.
+- SDK-style project (`ComCon.csproj`) that targets **.NET Framework 4.8.1** (`net481`), not modern .NET. Windows only. Reference assemblies come from the auto-referenced `Microsoft.NETFramework.ReferenceAssemblies` NuGet package, so no locally installed targeting pack is needed.
+- Build: `dotnet build` from the repo root (`dotnet build -c Release` for a release build).
+- Run: `bin\Debug\net481\ComCon.exe COM3 -b 115200`, or `ComCon.exe --list`. Interactive behaviour can only be checked in a real console (Windows Terminal) attached to a real or virtual COM port, such as a com0com pair.
+- There are no tests. Code style is set in `.editorconfig`.
+- Version: `<Version>` in the csproj is the default for local builds. The release workflow overrides it from the tag (`v1.2.3` → `-p:Version=1.2.3`).
+- CI/release: `.github/workflows/build.yml` builds on every push and PR to `main` (`windows-latest`). On a `v*` tag it also creates a GitHub Release with `ComCon.exe` attached. Branch protection on `main` requires its `build` check.
 
 ## Architecture
 
