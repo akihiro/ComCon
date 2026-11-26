@@ -9,3 +9,16 @@ updates:
       default-days: 7
     commit-message:
       prefix: ci
+
+  # Test-only packages (xunit, test SDK). ComCon.exe itself has no NuGet dependencies.
+  - package-ecosystem: nuget
+    directory: /tests/ComCon.Tests
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      test-packages:
+        patterns: ['*']
+    commit-message:
+      prefix: test

@@ -7,6 +7,8 @@
     <!-- Single-file output: embed the PDB and do not generate ComCon.exe.config (it only held supportedRuntime). -->
     <DebugType>embedded</DebugType>
     <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <!-- The test project lives under tests/; keep its files out of this project's default globs. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);tests/**</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Default for local builds. The release workflow overrides it from the tag (v1.2.3 -> -p:Version=1.2.3). -->
@@ -25,6 +27,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Management" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Lets the unit tests (tests/ComCon.Tests) use internal types such as Options. -->
+    <InternalsVisibleTo Include="ComCon.Tests" />
   </ItemGroup>
   <ItemGroup>
     <!-- Generate the strongly typed ComCon.Strings class from Strings.resx at build time. -->
