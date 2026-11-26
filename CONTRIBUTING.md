@@ -55,4 +55,4 @@ Workflow changes must keep the CI hardening:
 - Keep `permissions` minimal.
 - Never interpolate untrusted input (`${{ }}`) inside `run` scripts.
 
-The repository rejects actions that are not pinned or not GitHub-owned.
+The repository rejects actions that are not pinned, or that are not GitHub-owned or explicitly allowed (currently only `ossf/scorecard-action`).
