@@ -38,8 +38,9 @@ All user-facing messages live in `Strings.resx` (English). The `ComCon.Strings` 
 ## Pull requests
 
 1. Fork the repository and create a branch from `main`.
+   `main` accepts changes only through pull requests, which are squash-merged. This applies to maintainers too.
 2. Keep each pull request focused on one change.
-3. Make sure `dotnet build -c Release` succeeds. CI runs the same build on every pull request.
+3. Make sure `dotnet build -c Release` succeeds. CI runs the same build on every pull request, and a pull request can only be merged when that `build` check passes.
 4. Describe how you tested the change (device or virtual port, settings).
 
 By contributing, you agree that your contributions are licensed under the [Apache License 2.0](LICENSE).
