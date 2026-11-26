@@ -50,6 +50,9 @@ While connected, press Ctrl+] followed by:
   q        Quit
   b        Send a break signal
   e        Toggle local echo
+  d        Toggle DTR
+  r        Toggle RTS
+  R        Reset the board through DTR/RTS (ESP32, Arduino)
   Ctrl+]   Send Ctrl+] itself
   ?        Show help</value>
   </data>
@@ -108,7 +111,7 @@ While connected, press Ctrl+] followed by:
     <value>Local echo: OFF</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
-    <value>{0}  q:quit  b:send break  e:toggle local echo  Ctrl+]:send Ctrl+]</value>
+    <value>{0}  q:quit  b:send break  e:toggle local echo  d:DTR  r:RTS  R:reset board  Ctrl+]:send Ctrl+]</value>
   </data>
   <data name="UnknownCommand" xml:space="preserve">
     <value>Unknown command (Ctrl+] ? for help)</value>
@@ -118,6 +121,30 @@ While connected, press Ctrl+] followed by:
   </data>
   <data name="BreakFailed" xml:space="preserve">
     <value>Failed to send break: {0}</value>
+  </data>
+  <data name="DtrOn" xml:space="preserve">
+    <value>DTR: ON</value>
+  </data>
+  <data name="DtrOff" xml:space="preserve">
+    <value>DTR: OFF</value>
+  </data>
+  <data name="RtsOn" xml:space="preserve">
+    <value>RTS: ON</value>
+  </data>
+  <data name="RtsOff" xml:space="preserve">
+    <value>RTS: OFF</value>
+  </data>
+  <data name="RtsOwnedByFlowControl" xml:space="preserve">
+    <value>RTS cannot be changed: it is controlled by RTS/CTS flow control.</value>
+  </data>
+  <data name="ResetSent" xml:space="preserve">
+    <value>Reset pulse sent (DTR/RTS).</value>
+  </data>
+  <data name="ResetSentDtrOnly" xml:space="preserve">
+    <value>Reset pulse sent on DTR only (RTS is controlled by RTS/CTS flow control).</value>
+  </data>
+  <data name="ModemLinesFailed" xml:space="preserve">
+    <value>Failed to change DTR/RTS: {0}</value>
   </data>
   <data name="WriteTimeout" xml:space="preserve">
     <value>Write timed out (flow control: the remote side is not ready to receive).</value>

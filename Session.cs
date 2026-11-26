@@ -33,6 +33,10 @@ namespace ComCon
         private bool localEcho;
         private bool notConnectedShown;
 
+        // Current DTR/RTS output state, changed by Ctrl+] d / r and reapplied when --reconnect reopens the port.
+        private volatile bool dtr;
+        private volatile bool rts;
+
         // Written by the receiver thread; set to null when logging stops (write error or exit).
         private volatile SessionLog log;
 
@@ -40,6 +44,8 @@ namespace ComCon
         {
             this.options = options;
             localEcho = options.LocalEcho;
+            dtr = options.DtrEnable;
+            rts = options.RtsEnable;
             decoder = options.Encoding.GetDecoder();
             encoder = options.Encoding.GetEncoder();
         }
@@ -135,15 +141,15 @@ namespace ComCon
             var p = new SerialPort(options.PortName, options.BaudRate, options.Parity, options.DataBits, options.StopBits)
             {
                 Handshake = options.Handshake,
-                DtrEnable = options.DtrEnable,
+                DtrEnable = dtr,
                 ReadTimeout = SerialPort.InfiniteTimeout,
                 WriteTimeout = 3000,
             };
 
             // With RTS/CTS flow control the driver owns RTS, and setting it by hand throws.
-            if (options.Handshake == Handshake.None || options.Handshake == Handshake.XOnXOff)
+            if (RtsControllable)
             {
-                p.RtsEnable = options.RtsEnable;
+                p.RtsEnable = rts;
             }
 
             try
@@ -161,6 +167,12 @@ namespace ComCon
             // This is safe because Close() disposes the stream explicitly.
             GC.SuppressFinalize(p.BaseStream);
             return p;
+        }
+
+        /// <summary>With RTS/CTS flow control the driver owns RTS, and setting it by hand throws.</summary>
+        private bool RtsControllable
+        {
+            get { return options.Handshake == Handshake.None || options.Handshake == Handshake.XOnXOff; }
         }
 
         private SerialPort CurrentPort
@@ -251,6 +263,16 @@ namespace ComCon
                     localEcho = !localEcho;
                     term.WriteStatus(localEcho ? Strings.LocalEchoOn : Strings.LocalEchoOff);
                     break;
+                case 'd':
+                case 'D':
+                    ToggleDtr();
+                    break;
+                case 'r':
+                    ToggleRts();
+                    break;
+                case 'R':
+                    SendResetPulse();
+                    break;
                 case '?':
                 case 'h':
                 case 'H':
@@ -281,6 +303,75 @@ namespace ComCon
             catch (Exception ex)
             {
                 term.WriteStatus(Localization.Format(Strings.BreakFailed, ex.Message));
+            }
+        }
+
+        private void ToggleDtr()
+        {
+            SerialPort p = CurrentPort;
+            if (p == null)
+            {
+                term.WriteStatus(Strings.NotConnected);
+                return;
+            }
+
+            try
+            {
+                p.DtrEnable = !dtr;
+                dtr = !dtr;
+                term.WriteStatus(dtr ? Strings.DtrOn : Strings.DtrOff);
+            }
+            catch (Exception ex)
+            {
+                term.WriteStatus(Localization.Format(Strings.ModemLinesFailed, ex.Message));
+            }
+        }
+
+        private void ToggleRts()
+        {
+            if (!RtsControllable)
+            {
+                term.WriteStatus(Strings.RtsOwnedByFlowControl);
+                return;
+            }
+
+            SerialPort p = CurrentPort;
+            if (p == null)
+            {
+                term.WriteStatus(Strings.NotConnected);
+                return;
+            }
+
+            try
+            {
+                p.RtsEnable = !rts;
+                rts = !rts;
+                term.WriteStatus(rts ? Strings.RtsOn : Strings.RtsOff);
+            }
+            catch (Exception ex)
+            {
+                term.WriteStatus(Localization.Format(Strings.ModemLinesFailed, ex.Message));
+            }
+        }
+
+        /// <summary>Resets the board through DTR/RTS (ESP32/ESP8266 auto-reset, Arduino DTR reset).</summary>
+        private void SendResetPulse()
+        {
+            SerialPort p = CurrentPort;
+            if (p == null)
+            {
+                term.WriteStatus(Strings.NotConnected);
+                return;
+            }
+
+            try
+            {
+                ResetPulse.Send(new SerialPortModemLines(p), RtsControllable, Thread.Sleep);
+                term.WriteStatus(RtsControllable ? Strings.ResetSent : Strings.ResetSentDtrOnly);
+            }
+            catch (Exception ex)
+            {
+                term.WriteStatus(Localization.Format(Strings.ModemLinesFailed, ex.Message));
             }
         }
 

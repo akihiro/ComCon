@@ -60,7 +60,8 @@ Also in the root: `.editorconfig` (code style, including `using` placement), `.g
 ## Gotchas
 
 - `GC.SuppressFinalize(p.BaseStream)` in `Session.OpenPort`, right after `Open()`, works around a .NET Framework bug: after a USB-serial unplug, the `SerialStream` finalizer can crash the process. Keep it.
-- Setting `SerialPort.RtsEnable` while `Handshake` uses RTS throws an exception. That's why `Session` only sets it for `None` and `XOnXOff`.
+- Setting `SerialPort.RtsEnable` while `Handshake` uses RTS throws an exception. That's why `Session` only touches RTS when `RtsControllable` (`None` or `XOnXOff`) is true. This applies to `OpenPort`, `Ctrl+] r` and the reset pulse.
+- `Ctrl+] d/r` change the `dtr`/`rts` fields, which `OpenPort` reapplies on reconnect. `Ctrl+] R` runs `ResetPulse.Send` (`ModemControl.cs`). The order of its steps matters for the ESP32 auto-reset circuit: DTR must be restored before RTS, or the board resets twice. `ResetPulseTests` simulates that circuit, so keep it passing when changing the sequence.
 - `System.Management` (WMI, used for friendly port names) is an explicit `<Reference>` in the csproj.
 - `using` directives go inside the `namespace` block, not at the top of the file. Keep that style.
 - The language version is the default for net481 (C# 7.3). Newer syntax such as file-scoped namespaces, records, switch expressions, `using var` or nullable reference types won't compile unless `<LangVersion>` is raised in the csproj.
