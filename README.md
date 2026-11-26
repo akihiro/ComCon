@@ -3,6 +3,7 @@
 [![build](https://github.com/akihiro/ComCon/actions/workflows/build.yml/badge.svg)](https://github.com/akihiro/ComCon/actions/workflows/build.yml)
 [![release](https://img.shields.io/github/v/release/akihiro/ComCon?include_prereleases)](https://github.com/akihiro/ComCon/releases/latest)
 [![license](https://img.shields.io/github/license/akihiro/ComCon)](LICENSE)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/akihiro/ComCon/badge)](https://scorecard.dev/viewer/?uri=github.com/akihiro/ComCon)
 
 [日本語](README.ja.md)
 
